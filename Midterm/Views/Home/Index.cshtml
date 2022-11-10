@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h1>Todolator</h1>
+<p class="lead">Todolator is a free todo app for building great todo lists and notes.</p>
+
+<form class="form-inline" method="post" action="@Url.Action("create")">
+    <div class="row">
+        <div class="col-10">
+            <input class="form-control" placeholder="Do Homework" type="text" name="title">
+        </div>
+        <div class="col-2">
+            <input type="submit" class="btn btn-primary form-control" value="Add" />
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    <ul class="list-group">
+        @foreach (Midterm.Models.Todo todo in ViewBag.Todos)
+        {
+            <li class="list-group-item">
+                <div class="todo-item">
+                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                    <a href="@Url.Action("detail", new {id=todo.Id})">@todo.Title</a>
+                    <div class="btn-group">
+                        <button class="btn btn-info" data-id="@todo.Id">Edit</button>
+                        <button class="btn btn-danger" data-id="@todo.Id" onclick="DeleteTodo(this)">Delete</button>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+
+</div>
+
