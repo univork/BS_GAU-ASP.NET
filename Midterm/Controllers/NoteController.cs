@@ -1,4 +1,5 @@
-﻿using Midterm.Models;
+﻿using Midterm.Filters;
+using Midterm.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,13 @@ namespace Midterm.Controllers
     [RoutePrefix("Todo/{todoId:int}")]
     public class NoteController : Controller
     {
+        [Route("Note/Index")]
+        [HandleNotImplementedFilter]
+        public ActionResult Index()
+        {
+            throw new NotImplementedException("Page not implemented");
+        }
+
         [Route("Note/Create"), HttpPost]
         public ActionResult Create(int todoId, Note note)
         {

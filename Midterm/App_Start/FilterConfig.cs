@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using Midterm.Filters;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Midterm
@@ -8,6 +9,7 @@ namespace Midterm
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new HandleNotImplementedFilter());
         }
     }
 }
