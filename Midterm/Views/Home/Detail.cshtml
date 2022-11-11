@@ -6,15 +6,30 @@
 <h2>@ViewBag.Todo.Title</h2>
 <p>@ViewBag.Todo.Description</p>
 
-<div class="container">
+<h3>Add Note</h3>
+<form class="form-inline" onsubmit="AddNote(event)">
+    <div class="row">
+        <div class="col-10">
+            <input class="form-control" placeholder="Do Homework" id="note-content" type="text" name="TextContent">
+            <input class="form-control" type="hidden" id="todo-id" name="TodoId" value="@ViewBag.Todo.Id">
+        </div>
+        <div class="col-2">
+            <input type="submit" class="btn btn-primary form-control" value="Add" />
+        </div>
+    </div>
+</form>
+<br />
+
+<div class="container row row-cols-4 note-container">
     @foreach (Midterm.Models.Note note in ViewBag.Notes)
     {
-        <div class="card text-white bg-info mb-3" style="max-width: 18rem;">
-
-            <div class="card-header">@note.TextContent</div>
-            <div class="card-body">
-                <h5 class="card-title">Light card title</h5>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+        <div class="col mb-4">
+            <div class="card text-white bg-info mb-3" style="width: 100%; height: 100%;">
+                <div class="card-header">Note </div>
+                <div class="card-body">
+                    <p class="card-text">@note.TextContent</p>
+                </div>
+                <button class="btn btn-danger" data-todoid="@ViewBag.Todo.Id" data-noteid="@note.Id" onclick="DeleteNote(this)">Delete</button>
             </div>
         </div>
      }
