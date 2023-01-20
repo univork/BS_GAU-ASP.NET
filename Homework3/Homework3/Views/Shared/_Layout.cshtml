@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" title="more options">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Main Page", "Content", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("View Result", "ViewResult", "ViewResult")</li>
+                    <li>@Html.ActionLink("Content Result", "ContentResult", "Content")</li>
+                    <li>@Html.ActionLink("View Result", "Index", "ViewResult")</li>
+                    <li>@Html.ActionLink("Empty", "Index", "Empty")</li>
+                    <li>@Html.ActionLink("File", "Index", "File")</li>
+                    <li>@Html.ActionLink("Json", "Index", "Json")</li>
+                    <li>@Html.ActionLink("Js", "Index", "Js")</li>
+                    <li>@Html.ActionLink("Redirect", "Index", "Redirect")</li>
+                    <li>@Html.ActionLink("Redirect To Result", "Index", "Redirecttoresult")</li>
+                    <li>@Html.ActionLink("Status Code", "Index", "StatusCode")</li>
+                    <li>@Html.ActionLink("Unauthorized Code", "Index", "Unauthorized")</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
