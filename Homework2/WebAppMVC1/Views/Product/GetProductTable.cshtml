@@ -1,0 +1,29 @@
+﻿@model WebAppMVC1.Models.Product
+@{
+    ViewBag.Title = "GetProductTable";
+}
+
+<h2>Get Product Table</h2>
+
+<table class="table">
+    <tr>
+        <td> @Html.DisplayNameFor(model => Model.Id):  </td>
+        <td> @Html.DisplayFor(modelItem => Model.Id) </td>
+    </tr>
+    <tr>
+        <td> @Html.DisplayNameFor(model => Model.Name):  </td>
+        <td> @Html.DisplayFor(modelItem => Model.Name) </td>
+    </tr>
+    <tr>
+        <td> @Html.DisplayNameFor(model => Model.IsAvailable):  </td>
+        <td> @Html.DisplayFor(modelItem => Model.IsAvailable) </td>
+    </tr>
+    <tr>
+        <td> @Html.DisplayNameFor(model => Model.TotalAmount):  </td>
+        <td> @Html.DisplayFor(modelItem => Model.TotalAmount) </td>
+    </tr>
+    <tr>
+        <td> @Html.DisplayNameFor(model => Model.EachPrice):  </td>
+        <td> @Html.DisplayFor(modelItem => Model.EachPrice) </td>
+    </tr>
+</table>
