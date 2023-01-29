@@ -1,8 +1,4 @@
-﻿//Name: Product.cs
-//Author: Joshua Omundson
-//Date: 10.13.2014
-//Abstract: This is a POCO for a Product.
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

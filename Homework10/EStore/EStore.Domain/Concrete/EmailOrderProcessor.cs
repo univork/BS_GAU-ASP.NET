@@ -1,6 +1,4 @@
-﻿//NOTE: If you set the emailSetting.WriteAsFile to true, the file will be written with the .eml extension,
-//which can be read by any text editor.
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +30,6 @@ namespace EStore.Domain.Concrete
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(emailSettings.UserName, emailSettings.Password);
 
-                //If the order is flagged to write to a file, set file location information.
                 if (emailSettings.WriteAsFile)
                 {
                     smtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
@@ -40,21 +37,17 @@ namespace EStore.Domain.Concrete
                     smtpClient.EnableSsl = false;
                 }
 
-                //Start of the Order Proccessing email/file
                 StringBuilder body = new StringBuilder()
                     .Append("A new order has been submitted")
                     .AppendLine("---")
                     .AppendLine("Items:");
 
-                //for each set of items show to quanity, name, and subtotal cost.
-                //and add it to the email/file body
                 foreach (var line in cart.Lines)
                 {
                     var subtotal = line.Product.Price * line.Quantity;
                     body.AppendFormat("{0} x {1} (subtotal: {2:c}", line.Quantity, line.Product.Name, subtotal);
                 }
 
-                //Adds total order information, plus shipping details to email/file body
                 body.AppendFormat("Total order value: {0:c}", cart.ComputeTotalValue())
                     .AppendLine("---")
                     .AppendLine("Ship to:")
@@ -69,7 +62,6 @@ namespace EStore.Domain.Concrete
                     .AppendLine("---")
                     .AppendFormat("Gift wrap: {0}", shippingInfo.GiftWrap ? "Yes" : "No");
 
-                //Creates a new mail message.
                 MailMessage mailMessage = new MailMessage(emailSettings.MailFromAddress, emailSettings.MailToAddress, "New Order Submitted!", body.ToString());
                 
                 if (emailSettings.WriteAsFile)
@@ -77,7 +69,7 @@ namespace EStore.Domain.Concrete
                     mailMessage.BodyEncoding = Encoding.ASCII;
                 }
 
-                smtpClient.Send(mailMessage);
+                // smtpClient.Send(mailMessage);
             }
         }
     }

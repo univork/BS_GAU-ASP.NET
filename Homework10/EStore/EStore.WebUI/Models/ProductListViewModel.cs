@@ -1,8 +1,4 @@
-﻿//Name: ProductListViewModel.cs
-//Author: Joshua Omundson
-//Date: 10/18/2014
-//Abstract: This is a view model that is for a Product List with Pagination.
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
