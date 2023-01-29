@@ -46,7 +46,7 @@ namespace PMApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Book b, HttpPostedFileBase file)
+        public async Task<ActionResult> Create(Book b, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
             {
@@ -62,7 +62,21 @@ namespace PMApp.Controllers
                     b.ImagePath = imagepath;
                 } else b.ImagePath = null;
 
-                if (this.repo.Insert(b)) return RedirectToAction("Index");
+                bool success = false;
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(baseUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage Res = await client.PostAsJsonAsync("/api/Book", b);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                        success = JsonConvert.DeserializeObject<bool>(EmpResponse);
+                    } 
+                }
+                if (success) return RedirectToAction("Index");
                 else
                 {
                     ViewBag.errorMessage = "This item (name) already exists !!";
@@ -73,10 +87,24 @@ namespace PMApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            Book b = this.repo.Get(id);
-            return View(b);
+            using (HttpClient client = new HttpClient())
+            { 
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync($"/api/Book/{id}");
+
+                Book b = null;
+                if (Res.IsSuccessStatusCode)
+                {
+                    var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                    b = JsonConvert.DeserializeObject<Book>(EmpResponse);
+                }
+
+                return View(b);
+            }
         }
 
         [HttpGet]
@@ -87,7 +115,7 @@ namespace PMApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(Book b, HttpPostedFileBase file, string image)
+        public async Task<ActionResult> Edit(Book b, HttpPostedFileBase file, string image)
         {
             bool warning = false;
 
@@ -104,7 +132,23 @@ namespace PMApp.Controllers
                     b.ImagePath = imagepath;
                 } else warning = true;
 
-                if (this.repo.Update(b, warning)) return RedirectToAction("Index");
+                //if (this.repo.Update(b, warning)) return RedirectToAction("Index");
+
+                bool success = false;
+                using (HttpClient client = new HttpClient())
+                {
+                    client.BaseAddress = new Uri(baseUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage Res = await client.PutAsJsonAsync($"/api/Book?warning={warning}", b);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                        success = JsonConvert.DeserializeObject<bool>(EmpResponse);
+                    } 
+                }
+                if (success) return RedirectToAction("Index");
                 else {
                     ViewBag.errorMessage = "This item (name) already exists !!";
                     b.ImagePath = image;

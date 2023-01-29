@@ -6,16 +6,36 @@ using System.Web.Mvc;
 using PMEntity;
 using PMRepository;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace PMApp.Controllers
 {
     public class ClothController : BaseController
     {
         private ClothRepository repo = new ClothRepository();
+        string baseUrl = "https://localhost:44393";
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(this.repo.GetAll());
+            using (HttpClient client = new HttpClient())
+            { 
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync("/api/Cloth");
+                List<Cloth> clothes = new List<Cloth>();
+
+                if (Res.IsSuccessStatusCode)
+                {
+                    var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                    clothes = JsonConvert.DeserializeObject<List<Cloth>>(EmpResponse);
+                }
+
+                return View(clothes);
+            }
         }
 
         [HttpGet]
@@ -25,7 +45,7 @@ namespace PMApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Cloth c, HttpPostedFileBase file)
+        public async Task<ActionResult> Create(Cloth c, HttpPostedFileBase file)
         {
             if (ModelState.IsValid)
             {
@@ -46,10 +66,21 @@ namespace PMApp.Controllers
                     c.ImagePath = null;
                 }
 
-                if (this.repo.Insert(c))
+                bool success = false;
+                using (HttpClient client = new HttpClient())
                 {
-                    return RedirectToAction("Index");
+                    client.BaseAddress = new Uri(baseUrl);
+                    client.DefaultRequestHeaders.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpResponseMessage Res = await client.PostAsJsonAsync("/api/Cloth", c);
+
+                    if (Res.IsSuccessStatusCode)
+                    {
+                        var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                        success = JsonConvert.DeserializeObject<bool>(EmpResponse);
+                    } 
                 }
+                if (success) return RedirectToAction("Index");
                 else
                 {
                     ViewBag.errorMessage = "This item (name) already exists !!";
@@ -64,10 +95,24 @@ namespace PMApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            Cloth c = this.repo.Get(id);
-            return View(c);
+            using (HttpClient client = new HttpClient())
+            { 
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync($"/api/Cloth/{id}");
+
+                Cloth c = null;
+                if (Res.IsSuccessStatusCode)
+                {
+                    var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                    c = JsonConvert.DeserializeObject<Cloth>(EmpResponse);
+                }
+
+                return View(c);
+            }
         }
 
         [HttpGet]
