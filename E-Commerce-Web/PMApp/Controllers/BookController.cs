@@ -6,6 +6,10 @@ using System.Web.Mvc;
 using PMEntity;
 using PMRepository;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace PMApp.Controllers
 {
@@ -13,10 +17,26 @@ namespace PMApp.Controllers
     {
         private BookRepository repo = new BookRepository();
         private UserRepository userRepo = new UserRepository();
+        string baseUrl = "https://localhost:44393";
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(this.repo.GetAll());
+            using (HttpClient client = new HttpClient())
+            { 
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpResponseMessage Res = await client.GetAsync("/api/Book");
+                List<Book> books = new List<Book>();
+
+                if (Res.IsSuccessStatusCode)
+                {
+                    var EmpResponse = Res.Content.ReadAsStringAsync().Result;
+                    books = JsonConvert.DeserializeObject<List<Book>>(EmpResponse);
+                }
+
+                return View(books);
+            }
         }
 
         [HttpGet]
@@ -30,8 +50,7 @@ namespace PMApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (file != null && file.ContentLength > 0)
-                {
+                if (file != null && file.ContentLength > 0) {
                     var fileName = Path.GetFileName(file.FileName);
                     var guid = Guid.NewGuid().ToString();
                     var path = Path.Combine(Server.MapPath("~/uploads"), guid + fileName);
@@ -41,27 +60,16 @@ namespace PMApp.Controllers
                     string newpath = split[1];
                     string imagepath = "/uploads/" + newpath;
                     b.ImagePath = imagepath;
-                }
-                else
-                {
-                    b.ImagePath = null;
-                }
+                } else b.ImagePath = null;
 
-                if (this.repo.Insert(b))
-                {
-                    return RedirectToAction("Index");
-                }
+                if (this.repo.Insert(b)) return RedirectToAction("Index");
                 else
                 {
                     ViewBag.errorMessage = "This item (name) already exists !!";
                     return View(b);
                 }
                 
-            }
-            else
-            {
-                return View(b);
-            }
+            } else return View(b);
         }
 
         [HttpGet]
@@ -83,10 +91,8 @@ namespace PMApp.Controllers
         {
             bool warning = false;
 
-            if (ModelState.IsValid)
-            {
-                if (file != null && file.ContentLength > 0)
-                {
+            if (ModelState.IsValid) {
+                if (file != null && file.ContentLength > 0) {
                     var fileName = Path.GetFileName(file.FileName);
                     var guid = Guid.NewGuid().ToString();
                     var path = Path.Combine(Server.MapPath("~/uploads"), guid + fileName);
@@ -96,27 +102,16 @@ namespace PMApp.Controllers
                     string newpath = split[1];
                     string imagepath = "/uploads/" + newpath;
                     b.ImagePath = imagepath;
-                }
-                else
-                {
-                    warning = true;
-                }
+                } else warning = true;
 
-                //query
-                if (this.repo.Update(b, warning)) //positive result
-                {
-                    return RedirectToAction("Index");
-                }
-                else //negative result
-                {
+                if (this.repo.Update(b, warning)) return RedirectToAction("Index");
+                else {
                     ViewBag.errorMessage = "This item (name) already exists !!";
                     b.ImagePath = image;
                     return View(b);
                 }
                 
-            }
-            else
-            {
+            } else {
                 b.ImagePath = image;
                 return View(b);
             }
